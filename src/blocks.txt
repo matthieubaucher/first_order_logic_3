@@ -1,0 +1,20 @@
+// The initial state must contain the special block T as Table(T)
+Initial state: Table(t), On(a,t), On(d,a), On(c,t), On(b,c), Clear(d), Clear(b)
+Goal state: On(c,t), On(b,c), On(a,b)
+
+// must have different names for different functions
+Actions:
+  // Move block from atop one block to another block
+  MoveBlocks(BlockMoved, BlockFrom, BlockTo)
+  Pre: !Table(BlockMoved), Clear(BlockMoved), Clear(BlockTo), On(BlockMoved, BlockFrom)
+  Post: On(BlockMoved, BlockTo), !On(BlockMoved, BlockFrom), !Clear(BlockTo), Clear(BlockFrom)
+
+  // Move block from table to another block
+  MoveFromTable(BlockMoved, BlockFrom, BlockTo)
+  Pre: !Table(BlockMoved), Table(BlockFrom), Clear(BlockMoved), Clear(BlockTo), On(BlockMoved, BlockFrom)
+  Post: On(BlockMoved, BlockTo), !On(BlockMoved, BlockFrom), !Clear(BlockTo)
+
+  // Move block from block to table
+  MoveToTable(BlockMoved, BlockFrom, BlockTo)
+  Pre: !Table(BlockMoved), Table(BlockTo), Clear(BlockMoved), On(BlockMoved, BlockFrom)
+  Post: On(BlockMoved, BlockTo), !On(BlockMoved, BlockFrom), Clear(BlockFrom)

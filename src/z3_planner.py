@@ -44,6 +44,8 @@ def sat_plan(initial_state, goal, max_time):
         blocks |= set(clause[1:])
     # frame axioms of blocks world
     # no block is the table except T
+    #print(blocks)
+    #exit(1)
     for block in blocks:
         if block == 'T':
             sat_solver.add(to_bool('table', block))
@@ -73,19 +75,26 @@ def sat_plan(initial_state, goal, max_time):
     # 2. describe goal
     for item in goal:
         # TODO
-        pass
+        sat_solver.add(to_bool(*item + (max_time,)))
     # actions
     for tt in times:
         for action in ['object', 'source', 'destination']:
             all_actions = [(action, block, tt) for block in blocks]
             # at least one action per time step
             # TODO
+            sat_solver.add(Or(*[to_bool(action) for action in all_actions]))
             # at most one action per time step
             # TODO
+            sat_solver.add(AtMost(*[to_bool(action) for action in all_actions]))
         # all three arguments must be distinct
         # TODO
+        for block in blocks:
+            sat_solver.add(Not(And(to_bool('object', block, tt), to_bool('source', block, tt))))
+            sat_solver.add(Not(And(to_bool('object', block, tt), to_bool('destination', block, tt))))
+            sat_solver.add(Not(And(to_bool('source', block, tt), to_bool('destination', block, tt))))
         # table cannot be the object
         # TODO
+        sat_solver.add(Not(to_bool('object', 'T', tt)))
     # 3. explanatory frame axioms
     # 'clear'
     for block, tt in it.product(blocks, times):
